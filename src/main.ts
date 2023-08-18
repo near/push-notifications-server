@@ -1,7 +1,17 @@
+import 'dotenv/config';
 import { WebSocket } from 'ws';
+import { PubSub } from '@google-cloud/pubsub';
 
-const GRAPHQL_ENDPOINT = 'near-queryapi.api.pagoda.co';
-const BLOCK_HEIGHT = 98059353;
+
+const PROJECT_ID = process.env.PROJECT_ID || 'test-project';
+const TOPIC_NAME = process.env.TOPIC_NAME || 'test';
+const BLOCK_HEIGHT = process.env.START_BLOCK_HEIGHT;
+const QUERY_API_ENDPOINT = process.env.QUERY_API_ENDPOINT || 'near-queryapi.api.pagoda.co';
+
+
+const pubsub = new PubSub({projectId: PROJECT_ID});
+const topic = pubsub.topic(TOPIC_NAME);
+
 const notificationsSubscriptionQuery = `
 subscription Notifications {
   charleslavon_near_n0_notifications(where: 
@@ -28,7 +38,7 @@ const notificationsSubscription = {
   },
 };
 
-const ws = new WebSocket(`wss://${GRAPHQL_ENDPOINT}/v1/graphql`, 'graphql-ws');
+const ws = new WebSocket(`wss://${QUERY_API_ENDPOINT}/v1/graphql`, 'graphql-ws');
 
 ws.onopen = () => {
   console.log(`Connection to WS has been established`);
@@ -55,12 +65,19 @@ ws.onclose = () => {
 
 ws.onmessage = (e) => {
   const data = JSON.parse(e.data);
-  if (data.id == 'notifications') {
-    console.log('received data', data);
-    if (data.payload?.errors) {
-      console.log('Errors', data.payload.errors);
-    } else if (data.payload?.data?.charleslavon_near_n0_notifications) {
-      console.log(data.payload?.data?.charleslavon_near_n0_notifications);
+  if (data.payload?.errors) {
+    console.log('Errors', data.payload.errors);
+  } else if (data.id == 'notifications' && data.payload?.data?.charleslavon_near_n0_notifications) {
+    const messages = data.payload?.data?.charleslavon_near_n0_notifications;
+    console.log('Received data', messages);
+
+    if (messages.length > 0) {
+      messages.forEach( (message) => {
+        console.log('Publishing message', message);
+        topic.publishMessage({data: Buffer.from(JSON.stringify(message))});
+        console.log('Message published');
+
+      });
     }
   }
 };

@@ -11,6 +11,7 @@
     "@types/node": "~18",
     "@typescript-eslint/eslint-plugin": "~5.59",
     "@typescript-eslint/parser": "~5.59",
+    "dotenv": "^8.2.0",
     "eslint": "~8.38",
     "eslint-config-prettier": "~8.8",
     "eslint-plugin-jest": "~27.2",
@@ -23,6 +24,7 @@
   },
   "scripts": {
     "start": "node build/src/main.js",
+    "dev": "node -r dotenv/config build/src/main.js",
     "clean": "rimraf coverage build tmp",
     "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.json",
@@ -35,6 +37,7 @@
   },
   "author": "milenakrawczyk",
   "dependencies": {
+    "@google-cloud/pubsub": "^4.0.1",
     "tslib": "~2.5",
     "ws": "^8.13.0"
   },

@@ -74,8 +74,9 @@ ws.onmessage = (e) => {
     if (messages.length > 0) {
       messages.forEach( (message) => {
         console.log('Publishing message', message);
-        topic.publishMessage({data: Buffer.from(JSON.stringify(message))});
-        console.log('Message published');
+        topic.publishMessage({data: Buffer.from(JSON.stringify(message))}).then(() =>{
+          console.log('Message published, id: ' + message.id);
+        });
 
       });
     }

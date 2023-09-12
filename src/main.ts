@@ -59,8 +59,8 @@ ws.onopen = () => {
   setTimeout(() => ws.send(JSON.stringify(notificationsSubscription)), 50);
 };
 
-ws.onclose = () => {
-  console.log(`WS Connection has been closed`);
+ws.onclose = (e) => {
+  console.log(`WS Connection has been closed`, e);
 };
 
 ws.onmessage = (e) => {

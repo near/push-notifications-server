@@ -7,14 +7,14 @@ const PROJECT_ID = process.env.PROJECT_ID || 'test-project';
 const TOPIC_NAME = process.env.TOPIC_NAME || 'test';
 let BLOCK_HEIGHT = Number(process.env.START_BLOCK_HEIGHT);
 const QUERY_API_ENDPOINT = process.env.QUERY_API_ENDPOINT || 'near-queryapi.api.pagoda.co';
-
+const SUBSCRIPTION_BATCH_SIZE = process.env.SUBSCRIPTION_BATCH_SIZE || 5;
 
 const pubsub = new PubSub({projectId: PROJECT_ID});
 const topic = pubsub.topic(TOPIC_NAME);
 
 const notificationsSubscriptionQuery = `
 subscription Notifications {
-  charleslavon_near_n0_notifications_stream(cursor: { initial_value: { blockHeight: ${BLOCK_HEIGHT} }, ordering: ASC }, batch_size: 1) {
+  charleslavon_near_n0_notifications_stream(cursor: { initial_value: { blockHeight: ${BLOCK_HEIGHT} }, ordering: ASC }, batch_size: ${SUBSCRIPTION_BATCH_SIZE}) {
     id
     blockHeight
     initiatedBy

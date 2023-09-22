@@ -12,38 +12,38 @@ const SUBSCRIPTION_BATCH_SIZE = process.env.SUBSCRIPTION_BATCH_SIZE || 5;
 const pubsub = new PubSub({projectId: PROJECT_ID});
 const topic = pubsub.topic(TOPIC_NAME);
 
-const notificationsSubscriptionQuery = `
-subscription Notifications {
-  charleslavon_near_n0_notifications_stream(cursor: { initial_value: { blockHeight: ${BLOCK_HEIGHT} }, ordering: ASC }, batch_size: ${SUBSCRIPTION_BATCH_SIZE}) {
-    id
-    blockHeight
-    initiatedBy
-    itemType
-    message
-    path
-    receiver
-    valueType
-  }
-}
-`;
 
-const notificationsSubscription = {
-  type: 'start',
-  id: 'notifications',
-  payload: {
-    operationName: 'Notifications',
-    query: notificationsSubscriptionQuery,
-    variables: {},
-  },
-};
-
-const timeout = 10; // seconds
+const timeout = 5; // seconds
 
 function connect(address, protocols, options) {
     const ws = new WebSocket(address, protocols, options);
     const timerTimeout = setTimeout(() => ws.terminate(), timeout * 1000); // force close unless cleared on 'open'
     ws.onopen = () => {
       console.log(`Connection to WS has been established`);
+      const notificationsSubscriptionQuery = `
+        subscription Notifications {
+          charleslavon_near_n0_notifications_stream(cursor: { initial_value: { blockHeight: ${BLOCK_HEIGHT} }, ordering: ASC }, batch_size: ${SUBSCRIPTION_BATCH_SIZE}) {
+            id
+            blockHeight
+            initiatedBy
+            itemType
+            message
+            path
+            receiver
+            valueType
+          }
+        }
+        `;
+
+      const notificationsSubscription = {
+        type: 'start',
+        id: 'notifications',
+        payload: {
+          operationName: 'Notifications',
+          query: notificationsSubscriptionQuery,
+          variables: {},
+        },
+      };
       ws._socket.setKeepAlive(true, 100);
       ws.send(
         JSON.stringify({
@@ -76,7 +76,7 @@ function connect(address, protocols, options) {
             console.log('Publishing message', JSON.stringify(message));
             topic.publishMessage({data: Buffer.from(JSON.stringify(message))}).then(() =>{
               console.log('Message published, id: ' + message.id);
-              BLOCK_HEIGHT = BLOCK_HEIGHT > message.blockHeight ?  BLOCK_HEIGHT : message.blockHeight - 60 * 1;
+              BLOCK_HEIGHT = BLOCK_HEIGHT > message.blockHeight ?  BLOCK_HEIGHT : message.blockHeight - 3;
             });
     
           });

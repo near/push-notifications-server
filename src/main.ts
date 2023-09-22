@@ -66,14 +66,14 @@ function connect(address, protocols, options) {
     ws.onmessage = (e) => {
       const data = JSON.parse(e.data);
       if (data.payload?.errors) {
-        console.log('Errors', data.payload.errors);
+        console.log('Errors', JSON.stringify(data.payload.errors));
       } else if (data.id == 'notifications' && data.payload?.data?.charleslavon_near_n0_notifications_stream) {
         const messages = data.payload?.data?.charleslavon_near_n0_notifications_stream;
-        console.log('Received data', messages);
+        console.log('Received data', JSON.stringify(messages));
     
         if (messages.length > 0) {
           messages.forEach( (message) => {
-            console.log('Publishing message', message);
+            console.log('Publishing message', JSON.stringify(message));
             topic.publishMessage({data: Buffer.from(JSON.stringify(message))}).then(() =>{
               console.log('Message published, id: ' + message.id);
               BLOCK_HEIGHT = BLOCK_HEIGHT > message.blockHeight ?  BLOCK_HEIGHT : message.blockHeight - 60 * 1;

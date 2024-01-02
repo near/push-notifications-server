@@ -13,6 +13,7 @@ Run to start:
 Install Pub/Sub:
 
 `gcloud components install pubsub-emulator`
+
 `gcloud components update`
 
 Start the emulator:

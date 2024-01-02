@@ -22,7 +22,7 @@ function connect(address, protocols, options) {
       console.log(`Connection to WS has been established`);
       const notificationsSubscriptionQuery = `
         subscription Notifications {
-          charleslavon_near_n0_notifications_stream(cursor: { initial_value: { blockHeight: ${BLOCK_HEIGHT} }, ordering: ASC }, batch_size: ${SUBSCRIPTION_BATCH_SIZE}) {
+          dataplatform_near_n0_notifications_stream(cursor: { initial_value: { blockHeight: ${BLOCK_HEIGHT} }, ordering: ASC }, batch_size: ${SUBSCRIPTION_BATCH_SIZE}) {
             id
             blockHeight
             initiatedBy
@@ -52,7 +52,7 @@ function connect(address, protocols, options) {
             headers: {
               'Content-Type': 'application/json',
               'Hasura-Client-Name': 'hasura-console',
-              'x-hasura-role': 'charleslavon_near',
+              'x-hasura-role': 'dataplatform_near',
             },
             lazy: true,
           },
@@ -67,8 +67,8 @@ function connect(address, protocols, options) {
       const data = JSON.parse(e.data);
       if (data.payload?.errors) {
         console.log('Errors', JSON.stringify(data.payload.errors));
-      } else if (data.id == 'notifications' && data.payload?.data?.charleslavon_near_n0_notifications_stream) {
-        const messages = data.payload?.data?.charleslavon_near_n0_notifications_stream;
+      } else if (data.id == 'notifications' && data.payload?.data?.dataplatform_near_n0_notifications_stream) {
+        const messages = data.payload?.data?.dataplatform_near_n0_notifications_stream;
         console.log('Received data', JSON.stringify(messages));
     
         if (messages.length > 0) {

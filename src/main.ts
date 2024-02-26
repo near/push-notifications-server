@@ -31,6 +31,8 @@ function connect(address, protocols, options) {
             path
             receiver
             valueType
+            devhubPostId
+            actionAtBlockHeight
           }
         }
         `;
